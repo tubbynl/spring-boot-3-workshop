@@ -46,10 +46,13 @@ You do have to add the `native-image-maven-plugin` to the `pom.xml`.
 ```
 It is also important to make sure you are using the Spring Boot 3.0 parent POM.
 
-Once ready, you can create a native image using docker:
+Once ready, you can create a native image using docker and run it:
 ```shell
 mvn -Pnative spring-boot:build-image
+docker run -p 8080:8080 spring-6-workshop:0.0.1-SNAPSHOT
 ```
+Notice that the startup time for the application is significantly lower.  
+This is useful for auto-scaling applications or serverless workloads that need to start quickly.
 
 It is also possible without docker, as described in the documentation. But it is more difficult to set up.
 

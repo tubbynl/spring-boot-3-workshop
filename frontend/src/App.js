@@ -52,24 +52,22 @@ export function App() {
 
     async function onAdded() {
         const title = addTodoRef.current.value
-        if (title) {
-            const newTodo = {title, done: false}
-            let response = await fetch('/api/todos', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newTodo),
-            })
-            if(!response.ok) {
-                setErrorMessage('Error: ' + (await response.json()).detail)
-                return
-            }
-            response = await fetch('/api/todos')
-            const data = await response.json()
-            if(response.ok) {
-                setTodos(data)
-            }
+        const newTodo = {title, done: false}
+        let response = await fetch('/api/todos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newTodo),
+        })
+        if(!response.ok) {
+            setErrorMessage('Error: ' + (await response.json()).detail)
+            return
+        }
+        response = await fetch('/api/todos')
+        const data = await response.json()
+        if(response.ok) {
+            setTodos(data)
         }
     }
 
