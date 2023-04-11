@@ -1,7 +1,7 @@
-Spring 6 Workshop
+Spring Boot 3 Workshop
 =================
 
-This is a demo project for the Spring 6 Workshop.
+This is a demo project for the Spring Boot 3 (Spring Framework 6) Workshop.
 This is a simple Spring Boot 2 application with a REST API and a frontend.
 
 The application is a simple TODO list built with maven.
