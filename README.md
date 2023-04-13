@@ -50,9 +50,15 @@ mvn -Pnative spring-boot:build-image
 docker run -p 8080:8080 spring-6-workshop:0.0.1-SNAPSHOT
 ```
 Notice that the startup time for the application is significantly lower.  
-This is useful for auto-scaling applications or serverless workloads that need to start quickly.
-
+This is useful for auto-scaling applications or serverless workloads that need to start quickly.  
 It is also possible without docker, as described in the documentation. But it is more difficult to set up.
+
+One thing you will notice if you run the application is that the "Add defaults" button no longer works.  
+If you check the console you will find an error warning of unexpected use of reflection.  
+This is because the applicaiton is mapping from a custom `TodoDefault` class which is not auto-detected in the controller.
+
+When you use reflection for mappers, libraries or rest clients outside of a controller you have to "hint" spring AOT.
+You can do this by adding the annotation `@RegisterReflectionForBinding(TodoDefault.class)` to `DefaultsService.getDefaults`.
 
 ## Challenge 3: Problem Details
 The third challenge is to add [Problem Details](https://datatracker.ietf.org/doc/html/rfc7807) to the application.
@@ -80,7 +86,7 @@ The fourth challenge is to add observability to the application.
 The application has been configured to use [Micrometer](https://micrometer.io/) to collect metrics.
 Metrics are exposed via a prometheus endpoint on `/actuator/prometheus` which is scraped by a prometheus installation.
 
-To set up a local dashboard, you can use the docker-compose via `docker-compose up`.  
+To set up a local dashboard, you can build the application with `mvn spring-boot:build-image` use the docker-compose file via `docker-compose up`.  
 This will create a new grafana dashboard on `localhost:3000` that shows application metrics.  
 This also sets up a Loki logging server and Tempo tracing server which integrate well with grafana.  
 Some example dashboards are already configured, but the data is incomplete.
@@ -95,11 +101,22 @@ the observation of these events.
 This means that you can get metrics, tracing and log-correlation using a single API, and spring already has
 many pre-defined events that you can observe. Such as http client and server requests, schedulers, etc.
 
-To get this to work though, you have to add support for Spring Boot 3's new 
+To get this to work though, you have to add support for Spring Boot 3's new
 [tracing implementation for OpenTelemetry](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.metrics.export.otlp).  
 You will have to configure the `management.otlp.metrics.export.url` property to point to the tempo tracing server.
-
 Note: The url should be `http://tempo:4317`
+
+You will also have to add opentelemetry dependencies to the `pom.xml`:
+```xml
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-tracing-bridge-otel</artifactId>
+</dependency>
+<dependency>
+<groupId>io.opentelemetry</groupId>
+<artifactId>opentelemetry-exporter-otlp</artifactId>
+</dependency>
+```
 
 Now you can view your application logs to find a tracing ID and go to the grafana environment to view the related logs and metrics.
 
@@ -127,4 +144,3 @@ You will need to add webflux as a dependency and use it as an adapter for the pr
     <artifactId>spring-boot-starter-webflux</artifactId>
 </dependency>
 ```
-

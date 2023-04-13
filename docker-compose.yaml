@@ -50,7 +50,7 @@ services:
   # Applications
 
   app-workshop:
-    build: .
+    build: spring-workshop:0.0.1-SNAPSHOT
     environment:
       - MANAGEMENT_METRICS_TAGS_APPLICATION=spring-6-workshop
     ports:
