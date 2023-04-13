@@ -30,5 +30,11 @@ public class Spring6WorkshopApplication {
             return ProblemDetail
                     .forStatusAndDetail(HttpStatus.BAD_REQUEST, tmi.getMaxItems()+" is the max jongeh");
         }
+
+        @ExceptionHandler(CustomValidationException.class)
+        public ProblemDetail handleCustomException(CustomValidationException cve) {
+            return ProblemDetail
+                    .forStatusAndDetail(HttpStatus.BAD_REQUEST, cve.getMessage());
+        }
     }
 }

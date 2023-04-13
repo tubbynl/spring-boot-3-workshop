@@ -36,7 +36,7 @@ public class TodoController {
         List<Todo> todos = todoRepository.findAll();
 
         if(todo.getTitle().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title cannot be blank");
+            throw new CustomValidationException("title","Title cannot be blank");
         }
 
         if (todos.size() >= MAX_ITEMS_PER_PROJECT) {
