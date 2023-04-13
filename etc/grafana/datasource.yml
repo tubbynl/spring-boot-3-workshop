@@ -48,11 +48,6 @@ datasources:
         hide: false
       tracesToLogs:
         datasourceUid: loki
-        filterBySpanID: false
-        filterByTraceID: true
-        mapTagNamesEnabled: false
-        tags:
-          - compose_service
     readOnly: false
     editable: true
   - uid: loki
@@ -70,7 +65,7 @@ datasources:
     jsonData:
       derivedFields:
         - datasourceUid: tempo
-          matcherRegex: (?:trace_id)=(\w+)
+          matcherRegex: \[.+,(.+?),
           name: TraceID
           url: $${__value.raw}
     readOnly: false

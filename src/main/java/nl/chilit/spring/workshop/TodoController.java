@@ -1,6 +1,7 @@
 package nl.chilit.spring.workshop;
 
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,8 @@ import java.util.List;
 public class TodoController {
     public static final int MAX_ITEMS_PER_PROJECT = 10;
     private final TodoRepository todoRepository;
+    private final DefaultsService defaultsService;
+    private final ModelMapper modelMapper;
 
     @GetMapping
     public List<Todo> getTodos() {
@@ -58,5 +61,14 @@ public class TodoController {
     public void deleteTodo(@PathVariable Long id) {
         Todo todo = todoRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         todoRepository.delete(todo);
+    }
+
+    @Transactional
+    @PostMapping("/add-defaults")
+    public void addDefaults() {
+        for (TodoDefault todoDefault : defaultsService.getDefaults()) {
+            Todo todo = modelMapper.map(todoDefault, Todo.class);
+            todoRepository.save(todo);
+        }
     }
 }

@@ -1,14 +1,3 @@
-x-logging: &default-logging
-  driver: loki
-  options:
-    loki-url: 'http://localhost:3100/api/prom/push'
-    loki-pipeline-stages: |
-      - multiline:
-          firstline: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}'
-          max_wait_time: 3s
-      - regex:
-          expression: '^(?P<date>\d{4}-\d{2}-\d{2}) (?P<time>\d{2}:\d{2}:\d{2}.\d{3}) (?P<message>(?s:.*))$$'
-
 version: "3.4"
 
 services:
@@ -32,7 +21,6 @@ services:
       - --enable-feature=exemplar-storage
     depends_on:
       - loki
-    logging: *default-logging
 
   tempo:
     image: grafana/tempo:2.0.1
@@ -42,7 +30,6 @@ services:
       - "4317:4317"
     depends_on:
       - loki
-    logging: *default-logging
 
   grafana:
     image: grafana/grafana:9.4.3
@@ -59,17 +46,12 @@ services:
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
-    logging: *default-logging
 
   # Applications
 
   app-workshop:
     build: .
     environment:
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
-      - OTEL_RESOURCE_ATTRIBUTES=service.name=spring-6-workshop,compose_service=app-workshop
-      - OTEL_METRICS_EXPORTER=none
       - MANAGEMENT_METRICS_TAGS_APPLICATION=spring-6-workshop
     ports:
       - "8080:8080"
-    logging: *default-logging
