@@ -11,9 +11,7 @@ Before getting started, it is suggested to test the application as-is using `mvn
 
 ## Requirements
 - Java 17
-- Docker
-  - loki logging plugin `docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions`
-  - Required for grafana dashboard as per [this GitHub repository](https://github.com/blueswen/spring-boot-observability)
+- Docker (required to create native image and run grafana)
 
 ## Getting started
 Please refer to the [Presentation](https://chilit-nl.github.io/reveal.js/2022.jfall.spring-6/) for an explanation of the new features.
@@ -80,22 +78,53 @@ Define a custo error handler that maps the exception to a problem detail. Refer 
 The fourth challenge is to add observability to the application.
 
 The application has been configured to use [Micrometer](https://micrometer.io/) to collect metrics.
-Metrics are exposed via a prometheus endpoint and tracing is transmitted via the [OpenTelemetry](https://opentelemetry.io/) protocol using an agent.
+Metrics are exposed via a prometheus endpoint on `/actuator/prometheus` which is scraped by a prometheus installation.
 
-To set up a local dashboard, you can use the docker-compose via `docker-compose up`.
-This will create a new grafana dashboard on `localhost:3000` that shows application metrics.
+To set up a local dashboard, you can use the docker-compose via `docker-compose up`.  
+This will create a new grafana dashboard on `localhost:3000` that shows application metrics.  
+This also sets up a Loki logging server and Tempo tracing server which integrate well with grafana.  
+Some example dashboards are already configured, but the data is incomplete.
 
 **Note:** The configuration for grafana is based on [A GitHub repository](https://github.com/blueswen/spring-boot-observability)
-and it requires installing a Loki logging plugin for docker using `docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions`.
+and adapted to work with the loki log appender and spring boot 3.
 
-Spring Boot 3 introduces [a lot of extra metrics](https://docs.spring.io/spring-framework/docs/current/reference/html/integration.html#integration.observability) out of the box with its new Observability integration.
-Each metric for `http.server.requests` now has a `exception`, `method`, `outcome`, `status, `uri` and `http.uri` key that can be used for making new graphs.
+Spring Boot 3 introduces support for Micrometer Observability which is an API for adding custom metrics.
+The unique thing about this API is that it treats events as "observable" and derives metrics, tracing and logging from
+the observation of these events.
 
-Try to use one of the new metrics to create a new graph in grafana.
+This means that you can get metrics, tracing and log-correlation using a single API, and spring already has
+many pre-defined events that you can observe. Such as http client and server requests, schedulers, etc.
+
+To get this to work though, you have to add support for Spring Boot 3's new 
+[tracing implementation for OpenTelemetry](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.metrics.export.otlp).  
+You will have to configure the `management.otlp.metrics.export.url` property to point to the tempo tracing server.
+
+Note: The url should be `http://tempo:4317`
+
+Now you can view your application logs to find a tracing ID and go to the grafana environment to view the related logs and metrics.
 
 ### Challenge 4.1 (Bonus)
 
 Add custom metrics to the application using the Observability API by following the [Spring Boot Documentation section on Observability](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator.observability).
 Think of a new action to "observe". Such as a recurring job that cleans up completed tasks?
 
-## Challenge 5: RestClient
+## Challenge 5: HTTP Interface
+
+In order to help quickstart your to-do list, a set of default items can be generated.  
+This generation is super high-tech and complex, and is therefor delegated to an external API.  
+This API however does not support CORS, so our backend communicates with this API to add default tasks.
+
+This is implemented in the `DefaultsService` which uses a RestTemplate.  
+Replace RestTemplate with the new HTTP Interface API that allows you to use an interface that spring
+implements for you using the new `HttpServiceProxyFactory`.
+
+This new API is currently only supported with `WebClient` from `WebFlux`.  
+You will need to add webflux as a dependency and use it as an adapter for the proxy factory.
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-webflux</artifactId>
+</dependency>
+```
+

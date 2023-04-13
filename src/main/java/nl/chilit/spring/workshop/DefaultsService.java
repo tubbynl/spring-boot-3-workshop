@@ -2,6 +2,7 @@ package nl.chilit.spring.workshop;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,10 +20,11 @@ public class DefaultsService {
     ) {
         this.restTemplate = restTemplateBuilder
             .rootUri(defaultsApiUrl)
+            .defaultHeader(HttpHeaders.ACCEPT, "application/json")
             .build();
     }
 
     public TodoDefault[] getDefaults() {
-        return restTemplate.getForObject("/task_defaults.json", TodoDefault[].class);
+        return restTemplate.getForObject("/task-defaults", TodoDefault[].class);
     }
 }
