@@ -1,5 +1,6 @@
 package nl.chilit.spring.workshop;
 
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +25,7 @@ public class DefaultsService {
             .build();
     }
 
+    @RegisterReflectionForBinding(TodoDefault.class)
     public TodoDefault[] getDefaults() {
         return restTemplate.getForObject("/task-defaults", TodoDefault[].class);
     }
