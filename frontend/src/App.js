@@ -130,7 +130,7 @@ export function App() {
             <Stack tokens={{ childrenGap: 's2' }}>
                 {todos.map(todo => (
                     <Stack horizontal tokens={{ childrenGap: 's2' }} verticalAlign='center' key={todo.id}>
-                        <Checkbox defealtChecked={todo.done} onChange={(e, checked) => onChecked(todo, checked)} />
+                        <Checkbox defaultChecked={todo.done} onChange={(e, checked) => onChecked(todo, checked)} />
                         <Text style={{ textDecoration: todo.done ? 'line-through' : 'none' }} variant='xLarge'>{todo.title}</Text>
                     </Stack>
                 ))}
