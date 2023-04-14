@@ -1,9 +1,23 @@
 package nl.chilit.spring.workshop;
 
-import lombok.Data;
 
-@Data
 public class TodoDefault {
-    String title;
-    Boolean done;
+    private String title;
+    private Boolean done;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Boolean getDone() {
+        return done;
+    }
+
+    public void setDone(Boolean done) {
+        this.done = done;
+    }
 }

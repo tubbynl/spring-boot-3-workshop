@@ -72,7 +72,6 @@ nl.chilit.spring:spring-workshop:jar:0.0.1-SNAPSHOT
 |        +- io.prometheus:simpleclient_tracer_otel:jar:0.16.0:runtime
 |        |  \- io.prometheus:simpleclient_tracer_common:jar:0.16.0:runtime
 |        \- io.prometheus:simpleclient_tracer_otel_agent:jar:0.16.0:runtime
-+- org.projectlombok:lombok:jar:1.18.26:compile
 \- org.springframework.boot:spring-boot-starter-test:jar:3.0.5:test
    +- org.springframework.boot:spring-boot-test:jar:3.0.5:test
    +- org.springframework.boot:spring-boot-test-autoconfigure:jar:3.0.5:test

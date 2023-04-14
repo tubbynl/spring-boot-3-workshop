@@ -1,7 +1,6 @@
 package nl.chilit.spring.workshop;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,12 +17,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/todos")
-@RequiredArgsConstructor
 public class TodoController {
     public static final int MAX_ITEMS_PER_PROJECT = 10;
     private final TodoRepository todoRepository;
     private final DefaultsService defaultsService;
     private final ModelMapper modelMapper;
+
+    public TodoController(TodoRepository todoRepository, DefaultsService defaultsService, ModelMapper modelMapper) {
+        this.todoRepository = todoRepository;
+        this.defaultsService = defaultsService;
+        this.modelMapper = modelMapper;
+    }
 
     @GetMapping
     public List<Todo> getTodos() {
