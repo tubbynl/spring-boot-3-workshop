@@ -9,5 +9,7 @@ public class CustomValidationException extends RuntimeException {
         this.field = field;
     }
 
-
+    public String getField() {
+        return field;
+    }
 }
